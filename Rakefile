@@ -11,7 +11,7 @@ end
 task :compile do
   `cat src/global.coffee > tmp/floodit.coffee`
   `cat src/point.coffee >> tmp/floodit.coffee`
+  `cat src/playground.coffee >> tmp/floodit.coffee`
   `cat src/core.coffee >> tmp/floodit.coffee`
   `coffee -c -j "public/javascripts/floodit.js" "tmp/floodit.coffee"`
-  `rm tmp/floodit.coffee`
 end

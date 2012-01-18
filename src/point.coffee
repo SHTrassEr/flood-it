@@ -1,6 +1,6 @@
 class FloodIt.Point
-  constructor: (@x, @y) ->
-  left: -> new FloodIt.Point(@x - 1, @y)
-  right: -> new FloodIt.Point(@x + 1, @y)
-  up: -> new FloodIt.Point(@x, @y - 1)
-  down: -> new FloodIt.Point(@x, @y + 1)
+  constructor: (@rowIndex, @columnIndex) ->
+  left: -> new FloodIt.Point(@rowIndex, @columnIndex - 1)
+  right: -> new FloodIt.Point(@rowIndex, @columnIndex + 1)
+  up: -> new FloodIt.Point(@rowIndex - 1, @columnIndex)
+  down: -> new FloodIt.Point(@rowIndex + 1, @columnIndex)

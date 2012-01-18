@@ -12,28 +12,79 @@
 
     Point.name = 'Point';
 
-    function Point(x, y) {
-      this.x = x;
-      this.y = y;
+    function Point(rowIndex, columnIndex) {
+      this.rowIndex = rowIndex;
+      this.columnIndex = columnIndex;
     }
 
     Point.prototype.left = function() {
-      return new FloodIt.Point(this.x - 1, this.y);
+      return new FloodIt.Point(this.rowIndex, this.columnIndex - 1);
     };
 
     Point.prototype.right = function() {
-      return new FloodIt.Point(this.x + 1, this.y);
+      return new FloodIt.Point(this.rowIndex, this.columnIndex + 1);
     };
 
     Point.prototype.up = function() {
-      return new FloodIt.Point(this.x, this.y - 1);
+      return new FloodIt.Point(this.rowIndex - 1, this.columnIndex);
     };
 
     Point.prototype.down = function() {
-      return new FloodIt.Point(this.x, this.y + 1);
+      return new FloodIt.Point(this.rowIndex + 1, this.columnIndex);
     };
 
     return Point;
+
+  })();
+
+  FloodIt.PlayGround = (function() {
+
+    PlayGround.name = 'PlayGround';
+
+    function PlayGround(rowCount, columnCount) {
+      var columnIndex, rowIndex, _i, _j, _ref, _ref2;
+      this.rowCount = rowCount;
+      this.columnCount = columnCount;
+      this.playGround = [];
+      for (rowIndex = _i = 0, _ref = this.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
+        this.playGround.push([]);
+        for (columnIndex = _j = 0, _ref2 = this.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
+          this.playGround[rowIndex].push(0);
+        }
+      }
+    }
+
+    PlayGround.prototype.isPointInPlayGround = function(pointToCell) {
+      if (!pointToCell instanceof FloodIt.Point) {
+        throw new Error("ArgumentException: pointToCell is not instance of FloodIt.Point");
+      }
+      if (pointToCell.columnIndex < 0 || pointToCell.columnIndex >= this.columnCount) {
+        return false;
+      }
+      if (pointToCell.rowIndex < 0 || pointToCell.rowIndex >= this.rowCount) {
+        return false;
+      }
+      return true;
+    };
+
+    PlayGround.prototype.getCellValue = function(pointToCell) {
+      if (this.isPointInPlayGround(pointToCell) === true) {
+        return this.playGround[pointToCell.rowIndex][pointToCell.columnIndex];
+      } else {
+        throw new Error("ArgumentException: pointToCell");
+      }
+    };
+
+    PlayGround.prototype.setCellValue = function(pointToCell, value) {
+      if (this.isPointInPlayGround(pointToCell) === true) {
+        this.playGround[pointToCell.rowIndex][pointToCell.columnIndex] = value;
+        return value;
+      } else {
+        throw new Error("ArgumentException: pointToCell");
+      }
+    };
+
+    return PlayGround;
 
   })();
 
