@@ -10,8 +10,12 @@ end
 
 task :compile do
   `cat src/global.coffee > tmp/floodit.coffee`
-  `cat src/point.coffee >> tmp/floodit.coffee`
-  `cat src/playground.coffee >> tmp/floodit.coffee`
-  `cat src/core.coffee >> tmp/floodit.coffee`
+  `cat src/models/point.coffee >> tmp/floodit.coffee`
+  `cat src/models/playground.coffee >> tmp/floodit.coffee`
+  `cat src/controllers/core.coffee >> tmp/floodit.coffee`
   `coffee -c -j "public/javascripts/floodit.js" "tmp/floodit.coffee"`
+  
+  `cat src/global.coffee > tmp/floodit_view.coffee`
+  `cat src/views/playgroundview.coffee >> tmp/floodit_view.coffee`
+  `coffee -c -j "public/javascripts/floodit_view.js" "tmp/floodit_view.coffee"`
 end

@@ -1,0 +1,71 @@
+<html>
+
+<head>
+
+  <title>canvasExample</title>
+  <script type="text/javascript" src="javascripts/floodit.js"></script>
+  <script type="text/javascript" src="javascripts/floodit_view.js"></script>
+  
+</head>
+
+<body>
+
+  <canvas height='320' width='480' id='flooditCanvas'>Обновите браузер</canvas>
+
+  <script>
+    function fillPlayGroundByOrder(playGround) {
+      fillPlayGround(
+        playGround, 
+        function(row, column) {
+          return row * playGround.columnCount + column + 1;
+        }
+      );
+    }
+
+    function fillPlayGroundByValue(playGround, value) {
+      fillPlayGround(
+        playGround, 
+        function(row, column) {
+          return value;
+        }
+      );
+    }
+
+    function fillPlayGround(playGround, fillMethod) {
+      var row;
+      var column;
+      for (row = 0; row < playGround.rowCount; row++) {
+        for (column = 0; column < playGround.columnCount; column++) {
+          playGround.setCellValue(
+            new FloodIt.Point(row, column),
+            fillMethod(row, column)
+          );
+        }
+      }
+    }
+  
+    var rowCount = 3;
+    var columnCount = 3;
+    FloodIt.Game = {};
+    FloodIt.Game.playGround = new FloodIt.PlayGround(rowCount, columnCount);
+    var playGround = FloodIt.Game.playGround;
+    
+    fillPlayGroundByOrder(FloodIt.Game.playGround);
+    var canvas = document.getElementById('flooditCanvas');
+    
+    FloodIt.Game.view = new FloodIt.View(canvas);
+    var view = FloodIt.Game.view;
+    FloodIt.Game.view.colorsArray = [
+      "#001","#002","#003",
+      "#004","#005","#006",
+      "#007","#008","#009","#00A"];
+    
+    view.print(FloodIt.Game.playGround);
+    FloodIt.core.flood(playGround, new FloodIt.Point(0,0), 2);
+    view.print(FloodIt.Game.playGround);
+    
+  </script>
+
+</body>
+
+</html>

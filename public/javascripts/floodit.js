@@ -4,7 +4,7 @@
 
   root = typeof exports !== "undefined" && exports !== null ? exports : this;
 
-  root.FloodIt = {};
+  if (root.FloodIt === void 0) root.FloodIt = {};
 
   FloodIt = root.FloodIt;
 

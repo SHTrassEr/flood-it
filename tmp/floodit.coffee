@@ -1,5 +1,5 @@
 root = exports ? this
-root.FloodIt = {}
+root.FloodIt = {} if root.FloodIt == undefined;
 FloodIt = root.FloodIt
 class FloodIt.Point
   constructor: (@rowIndex, @columnIndex) ->
