@@ -35,15 +35,22 @@ class FloodIt.PlayGround
       @playGround[pointToCell.rowIndex][pointToCell.columnIndex] = value;
       value
     else
-      throw new Error("ArgumentException: pointToCell");
+      throw new Error("ArgumentException: pointToCell")
 class FloodIt.core
   
-  parse = (field, currentPoint) ->
-    return if (currentPoint.x < 0);
-    return if (currentPoint.x >= field.length);
-    return if (currentPoint.y < 0);
-    return if (currentPoint.y >= field.length);
-
-  @Flood: (field, startPoint) ->
-    field;
-
+  floodFill = (playGround, currentPoint, targetValue, replacementValue) ->
+    return if not playGround.isPointInPlayGround(currentPoint);
+    return if playGround.getCellValue(currentPoint) != targetValue
+    playGround.setCellValue(currentPoint, replacementValue);
+    floodFill(playGround, currentPoint.left(), targetValue, replacementValue);
+    floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
+    floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
+    floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
+    
+  @flood: (playGround, startPoint, replacementValue) ->
+    floodFill(playGround,
+      startPoint,
+      playGround.getCellValue(startPoint),
+      replacementValue
+    );
+    playGround;

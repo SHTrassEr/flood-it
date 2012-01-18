@@ -89,21 +89,25 @@
   })();
 
   FloodIt.core = (function() {
-    var parse;
+    var floodFill;
 
     core.name = 'core';
 
     function core() {}
 
-    parse = function(field, currentPoint) {
-      if (currentPoint.x < 0) return;
-      if (currentPoint.x >= field.length) return;
-      if (currentPoint.y < 0) return;
-      if (currentPoint.y >= field.length) {}
+    floodFill = function(playGround, currentPoint, targetValue, replacementValue) {
+      if (!playGround.isPointInPlayGround(currentPoint)) return;
+      if (playGround.getCellValue(currentPoint) !== targetValue) return;
+      playGround.setCellValue(currentPoint, replacementValue);
+      floodFill(playGround, currentPoint.left(), targetValue, replacementValue);
+      floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
+      floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
+      return floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
     };
 
-    core.Flood = function(field, startPoint) {
-      return field;
+    core.flood = function(playGround, startPoint, replacementValue) {
+      floodFill(playGround, startPoint, playGround.getCellValue(startPoint), replacementValue);
+      return playGround;
     };
 
     return core;

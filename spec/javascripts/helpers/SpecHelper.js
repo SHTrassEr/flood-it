@@ -8,17 +8,33 @@ beforeEach(function() {
   });
 });
 
-  function fillPlayGroundByOrder(playGround) {
-    var row;
-    var column;
-    var counter = 1;
-    for (row = 0; row < playGround.rowCount; row++) {
-      for (column = 0; column < playGround.columnCount; column++) {
-        playGround.setCellValue(
-          new FloodIt.Point(row, column),
-          counter
-        );
-        counter ++;
-      }
+function fillPlayGroundByOrder(playGround) {
+  fillPlayGround(
+    playGround, 
+    function(row, column) {
+      return row * playGround.columnCount + column + 1;
+    }
+  );
+}
+
+function fillPlayGroundByValue(playGround, value) {
+  fillPlayGround(
+    playGround, 
+    function(row, column) {
+      return value;
+    }
+  );
+}
+
+function fillPlayGround(playGround, fillMethod) {
+  var row;
+  var column;
+  for (row = 0; row < playGround.rowCount; row++) {
+    for (column = 0; column < playGround.columnCount; column++) {
+      playGround.setCellValue(
+        new FloodIt.Point(row, column),
+        fillMethod(row, column)
+      );
     }
   }
+}
