@@ -10,62 +10,42 @@
 
 <body>
 
-  <canvas height='320' width='480' id='flooditCanvas'>Обновите браузер</canvas>
+  <canvas height='600' width='1000' id='flooditCanvas'>Обновите браузер</canvas>
 
   <script>
-    function fillPlayGroundByOrder(playGround) {
-      fillPlayGround(
-        playGround, 
-        function(row, column) {
-          return row * playGround.columnCount + column + 1;
-        }
-      );
-    }
+  function step(value) {
+    engine.step(value);
+    view.refresh();
+  }
 
-    function fillPlayGroundByValue(playGround, value) {
-      fillPlayGround(
-        playGround, 
-        function(row, column) {
-          return value;
-        }
-      );
-    }
+  function canvasClick() {
+    alert("ssss");
+  }
 
-    function fillPlayGround(playGround, fillMethod) {
-      var row;
-      var column;
-      for (row = 0; row < playGround.rowCount; row++) {
-        for (column = 0; column < playGround.columnCount; column++) {
-          playGround.setCellValue(
-            new FloodIt.Point(row, column),
-            fillMethod(row, column)
-          );
-        }
-      }
-    }
-  
-    var rowCount = 3;
-    var columnCount = 3;
-    FloodIt.Game = {};
-    FloodIt.Game.playGround = new FloodIt.PlayGround(rowCount, columnCount);
-    var playGround = FloodIt.Game.playGround;
-    
-    fillPlayGroundByOrder(FloodIt.Game.playGround);
+    var game = new FloodIt.Game();
+    game.rowCount = 15;
+    game.columnCount = 25;
+    game.colorsCount = 5;
+    FloodIt.Map.init(game);
+
+    engine = new FloodIt.Engine(game);
+
+    var playGround = game.playGround;
+
     var canvas = document.getElementById('flooditCanvas');
-    
-    FloodIt.Game.view = new FloodIt.View(canvas);
-    var view = FloodIt.Game.view;
-    FloodIt.Game.view.colorsArray = [
-      "#001","#002","#003",
-      "#004","#005","#006",
-      "#007","#008","#009","#00A"];
-    
-    view.print(FloodIt.Game.playGround);
-    FloodIt.core.flood(playGround, new FloodIt.Point(0,0), 2);
-    view.print(FloodIt.Game.playGround);
-    
-  </script>
+    canvas.addEventListener("click", canvasClick, false);
+    FloodIt.Game.view = new FloodIt.View(canvas, engine);
 
+    view = FloodIt.Game.view;
+
+    view.refresh();
+//    setTimeout("step(0)",1000);
+
+  </script>
+<a href="#" onclick="step(0);">0</a>
+<a href="#" onclick="step(1);">1</a>
+<a href="#" onclick="step(2);">2</a>
+<a href="#" onclick="step(3);">3</a>
 </body>
 
 </html>

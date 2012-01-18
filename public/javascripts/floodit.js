@@ -88,6 +88,37 @@
 
   })();
 
+  FloodIt.Player = (function() {
+
+    Player.name = 'Player';
+
+    function Player(name, startPoint) {
+      this.name = name;
+      this.startPoint = startPoint;
+    }
+
+    return Player;
+
+  })();
+
+  FloodIt.Game = (function() {
+
+    Game.name = 'Game';
+
+    function Game() {
+      this.rowCount = 10;
+      this.columnCount = 20;
+      this.colorsCount = 4;
+      this.playGround = null;
+      this.playersCount = 2;
+      this.players = [new FloodIt.Player("Player1"), new FloodIt.Player("Player2")];
+      this.currentPlayerId = 0;
+    }
+
+    return Game;
+
+  })();
+
   FloodIt.core = (function() {
     var floodFill;
 
@@ -106,11 +137,75 @@
     };
 
     core.flood = function(playGround, startPoint, replacementValue) {
+      if (playGround.getCellValue(startPoint) === replacementValue) return;
       floodFill(playGround, startPoint, playGround.getCellValue(startPoint), replacementValue);
       return playGround;
     };
 
     return core;
+
+  })();
+
+  FloodIt.Map = (function() {
+    var fillPlayGround, initPlayers;
+
+    Map.name = 'Map';
+
+    function Map() {}
+
+    fillPlayGround = function(game) {
+      var columnIndex, rowIndex, _i, _ref, _results;
+      _results = [];
+      for (rowIndex = _i = 0, _ref = game.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
+        _results.push((function() {
+          var _j, _ref2, _results2;
+          _results2 = [];
+          for (columnIndex = _j = 0, _ref2 = game.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
+            _results2.push(game.playGround.setCellValue(new FloodIt.Point(rowIndex, columnIndex), Math.floor(Math.random() * game.colorsCount)));
+          }
+          return _results2;
+        })());
+      }
+      return _results;
+    };
+
+    initPlayers = function(game) {
+      game.players[0].startPoint = new FloodIt.Point(0, 0);
+      return game.players[1].startPoint = new FloodIt.Point(game.rowCount - 1, game.columnCount - 1);
+    };
+
+    Map.init = function(game) {
+      game.playGround = new FloodIt.PlayGround(game.rowCount, game.columnCount);
+      fillPlayGround(game);
+      return initPlayers(game);
+    };
+
+    return Map;
+
+  })();
+
+  FloodIt.Engine = (function() {
+
+    Engine.name = 'Engine';
+
+    function Engine(game) {
+      this.game = game;
+    }
+
+    Engine.prototype.step = function(selectedValue) {
+      FloodIt.core.flood(this.game.playGround, this.game.players[this.game.currentPlayerId].startPoint, selectedValue);
+      return this.switchPlayer();
+    };
+
+    Engine.prototype.switchPlayer = function() {
+      if (this.game.currentPlayerId < this.game.playersCount - 1) {
+        return this.game.currentPlayerId++;
+      } else {
+        return this.game.currentPlayerId = 0;
+      }
+    };
+
+    return Engine;
 
   })();
 

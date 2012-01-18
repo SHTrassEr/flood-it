@@ -2,11 +2,13 @@ root = exports ? this
 root.FloodIt = {} if root.FloodIt == undefined;
 FloodIt = root.FloodIt
 class FloodIt.View
-  constructor: (@canvas) ->
+  constructor: (@canvas, @engine) ->
     @context = canvas.getContext('2d');
-    @colorsArray = []
+    @colorsArray = ["#E61961", "#4219E6", "#19E6B9", "#4CE619", "FFFB00"]
+
   
-  print: (playGround) ->
+  refresh: () ->
+    playGround = @engine.game.playGround;
     @context.fillStyle = '#00f';
     cnt = 0;
     for rowIndex in [0..playGround.rowCount - 1]
@@ -21,5 +23,5 @@ class FloodIt.View
           @canvas.width / playGround.columnCount * (columnIndex + 1), 
           @canvas.height / playGround.rowCount * (rowIndex + 1)
         );
-        
-        
+
+

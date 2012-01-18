@@ -36,8 +36,21 @@ class FloodIt.PlayGround
       value
     else
       throw new Error("ArgumentException: pointToCell")
+class FloodIt.Player
+  constructor: (@name, @startPoint) ->
+class FloodIt.Game
+  constructor: () ->
+    @rowCount = 10;
+    @columnCount = 20;
+    @colorsCount = 4;
+    @playGround = null;
+    @playersCount = 2;
+    @players = [
+      new FloodIt.Player("Player1"),
+      new FloodIt.Player("Player2")
+    ];
+    @currentPlayerId = 0;
 class FloodIt.core
-  
   floodFill = (playGround, currentPoint, targetValue, replacementValue) ->
     return if not playGround.isPointInPlayGround(currentPoint);
     return if playGround.getCellValue(currentPoint) != targetValue
@@ -46,11 +59,48 @@ class FloodIt.core
     floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
     floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
     floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
-    
+
   @flood: (playGround, startPoint, replacementValue) ->
+    return if playGround.getCellValue(startPoint) == replacementValue;
     floodFill(playGround,
       startPoint,
       playGround.getCellValue(startPoint),
       replacementValue
     );
     playGround;
+class FloodIt.Map
+
+  fillPlayGround = (game) ->
+    for rowIndex in [0..game.rowCount - 1]
+      for columnIndex in [0..game.columnCount - 1]
+        game.playGround.setCellValue(
+          new FloodIt.Point(rowIndex, columnIndex),
+          Math.floor(Math.random() * game.colorsCount)
+        );
+
+  initPlayers = (game) ->
+    game.players[0].startPoint = new FloodIt.Point(0, 0);
+    game.players[1].startPoint = 
+      new FloodIt.Point(game.rowCount - 1, game.columnCount - 1);
+
+  @init: (game) ->
+    game.playGround = 
+      new FloodIt.PlayGround(game.rowCount, game.columnCount);
+    fillPlayGround(game);
+    initPlayers(game);
+class FloodIt.Engine
+  constructor: (@game) ->
+
+  step: (selectedValue) ->
+    FloodIt.core.flood(
+      @game.playGround,
+      @game.players[@game.currentPlayerId].startPoint,
+      selectedValue
+    );
+    @switchPlayer();
+
+  switchPlayer: () ->
+    if (@game.currentPlayerId < @game.playersCount - 1)
+      @game.currentPlayerId++
+    else
+      @game.currentPlayerId = 0;

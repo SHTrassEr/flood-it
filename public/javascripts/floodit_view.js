@@ -12,14 +12,16 @@
 
     View.name = 'View';
 
-    function View(canvas) {
+    function View(canvas, engine) {
       this.canvas = canvas;
+      this.engine = engine;
       this.context = canvas.getContext('2d');
-      this.colorsArray = [];
+      this.colorsArray = ["#E61961", "#4219E6", "#19E6B9", "#4CE619", "FFFB00"];
     }
 
-    View.prototype.print = function(playGround) {
-      var cnt, columnIndex, groundValue, rowIndex, _i, _ref, _results;
+    View.prototype.refresh = function() {
+      var cnt, columnIndex, groundValue, playGround, rowIndex, _i, _ref, _results;
+      playGround = this.engine.game.playGround;
       this.context.fillStyle = '#00f';
       cnt = 0;
       _results = [];
