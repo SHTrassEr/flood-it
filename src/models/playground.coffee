@@ -6,24 +6,24 @@ class FloodIt.PlayGround
       for columnIndex in [0..@columnCount - 1]
         @playGround[rowIndex].push(0);
 
-  isPointInPlayGround: (pointToCell) ->
-    if(not pointToCell instanceof FloodIt.Point)
-      throw new Error("ArgumentException: pointToCell is not instance of FloodIt.Point");
-    if pointToCell.columnIndex < 0 or pointToCell.columnIndex >= @columnCount
+  isCellInPlayGround: (cell) ->
+    if(not cell instanceof FloodIt.Cell)
+      throw new Error("ArgumentException: cell is not instance of FloodIt.Cell");
+    if cell.columnIndex < 0 or cell.columnIndex >= @columnCount
       return false;
-    if pointToCell.rowIndex < 0 or pointToCell.rowIndex >= @rowCount
+    if cell.rowIndex < 0 or cell.rowIndex >= @rowCount
       return false;
     return true
 
-  getCellValue: (pointToCell) ->
-    if (@isPointInPlayGround(pointToCell) == true)
-      @playGround[pointToCell.rowIndex][pointToCell.columnIndex];
+  getCellValue: (cell) ->
+    if (@isCellInPlayGround(cell) == true)
+      @playGround[cell.rowIndex][cell.columnIndex];
     else
-      throw new Error("ArgumentException: pointToCell");
+      throw new Error("ArgumentException: cell");
       
-   setCellValue: (pointToCell, value) ->
-    if (@isPointInPlayGround(pointToCell) == true)
-      @playGround[pointToCell.rowIndex][pointToCell.columnIndex] = value;
+   setCellValue: (cell, value) ->
+    if (@isCellInPlayGround(cell) == true)
+      @playGround[cell.rowIndex][cell.columnIndex] = value;
       value
     else
-      throw new Error("ArgumentException: pointToCell")
+      throw new Error("ArgumentException: cell")

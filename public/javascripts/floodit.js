@@ -8,32 +8,32 @@
 
   FloodIt = root.FloodIt;
 
-  FloodIt.Point = (function() {
+  FloodIt.Cell = (function() {
 
-    Point.name = 'Point';
+    Cell.name = 'Cell';
 
-    function Point(rowIndex, columnIndex) {
+    function Cell(rowIndex, columnIndex) {
       this.rowIndex = rowIndex;
       this.columnIndex = columnIndex;
     }
 
-    Point.prototype.left = function() {
-      return new FloodIt.Point(this.rowIndex, this.columnIndex - 1);
+    Cell.prototype.left = function() {
+      return new FloodIt.Cell(this.rowIndex, this.columnIndex - 1);
     };
 
-    Point.prototype.right = function() {
-      return new FloodIt.Point(this.rowIndex, this.columnIndex + 1);
+    Cell.prototype.right = function() {
+      return new FloodIt.Cell(this.rowIndex, this.columnIndex + 1);
     };
 
-    Point.prototype.up = function() {
-      return new FloodIt.Point(this.rowIndex - 1, this.columnIndex);
+    Cell.prototype.up = function() {
+      return new FloodIt.Cell(this.rowIndex - 1, this.columnIndex);
     };
 
-    Point.prototype.down = function() {
-      return new FloodIt.Point(this.rowIndex + 1, this.columnIndex);
+    Cell.prototype.down = function() {
+      return new FloodIt.Cell(this.rowIndex + 1, this.columnIndex);
     };
 
-    return Point;
+    return Cell;
 
   })();
 
@@ -54,33 +54,31 @@
       }
     }
 
-    PlayGround.prototype.isPointInPlayGround = function(pointToCell) {
-      if (!pointToCell instanceof FloodIt.Point) {
-        throw new Error("ArgumentException: pointToCell is not instance of FloodIt.Point");
+    PlayGround.prototype.isCellInPlayGround = function(cell) {
+      if (!cell instanceof FloodIt.Cell) {
+        throw new Error("ArgumentException: cell is not instance of FloodIt.Cell");
       }
-      if (pointToCell.columnIndex < 0 || pointToCell.columnIndex >= this.columnCount) {
+      if (cell.columnIndex < 0 || cell.columnIndex >= this.columnCount) {
         return false;
       }
-      if (pointToCell.rowIndex < 0 || pointToCell.rowIndex >= this.rowCount) {
-        return false;
-      }
+      if (cell.rowIndex < 0 || cell.rowIndex >= this.rowCount) return false;
       return true;
     };
 
-    PlayGround.prototype.getCellValue = function(pointToCell) {
-      if (this.isPointInPlayGround(pointToCell) === true) {
-        return this.playGround[pointToCell.rowIndex][pointToCell.columnIndex];
+    PlayGround.prototype.getCellValue = function(cell) {
+      if (this.isCellInPlayGround(cell) === true) {
+        return this.playGround[cell.rowIndex][cell.columnIndex];
       } else {
-        throw new Error("ArgumentException: pointToCell");
+        throw new Error("ArgumentException: cell");
       }
     };
 
-    PlayGround.prototype.setCellValue = function(pointToCell, value) {
-      if (this.isPointInPlayGround(pointToCell) === true) {
-        this.playGround[pointToCell.rowIndex][pointToCell.columnIndex] = value;
+    PlayGround.prototype.setCellValue = function(cell, value) {
+      if (this.isCellInPlayGround(cell) === true) {
+        this.playGround[cell.rowIndex][cell.columnIndex] = value;
         return value;
       } else {
-        throw new Error("ArgumentException: pointToCell");
+        throw new Error("ArgumentException: cell");
       }
     };
 
@@ -92,9 +90,10 @@
 
     Player.name = 'Player';
 
-    function Player(name, startPoint) {
+    function Player(name, startCell, currentValue) {
       this.name = name;
-      this.startPoint = startPoint;
+      this.startCell = startCell;
+      this.currentValue = currentValue;
     }
 
     return Player;
@@ -119,30 +118,30 @@
 
   })();
 
-  FloodIt.core = (function() {
+  FloodIt.Core = (function() {
     var floodFill;
 
-    core.name = 'core';
+    Core.name = 'Core';
 
-    function core() {}
+    function Core() {}
 
-    floodFill = function(playGround, currentPoint, targetValue, replacementValue) {
-      if (!playGround.isPointInPlayGround(currentPoint)) return;
-      if (playGround.getCellValue(currentPoint) !== targetValue) return;
-      playGround.setCellValue(currentPoint, replacementValue);
-      floodFill(playGround, currentPoint.left(), targetValue, replacementValue);
-      floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
-      floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
-      return floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
+    floodFill = function(playGround, currentCell, targetValue, replacementValue) {
+      if (!playGround.isCellInPlayGround(currentCell)) return;
+      if (playGround.getCellValue(currentCell) !== targetValue) return;
+      playGround.setCellValue(currentCell, replacementValue);
+      floodFill(playGround, currentCell.left(), targetValue, replacementValue);
+      floodFill(playGround, currentCell.right(), targetValue, replacementValue);
+      floodFill(playGround, currentCell.up(), targetValue, replacementValue);
+      return floodFill(playGround, currentCell.down(), targetValue, replacementValue);
     };
 
-    core.flood = function(playGround, startPoint, replacementValue) {
-      if (playGround.getCellValue(startPoint) === replacementValue) return;
-      floodFill(playGround, startPoint, playGround.getCellValue(startPoint), replacementValue);
+    Core.flood = function(playGround, startCell, replacementValue) {
+      if (playGround.getCellValue(startCell) === replacementValue) return;
+      floodFill(playGround, startCell, playGround.getCellValue(startCell), replacementValue);
       return playGround;
     };
 
-    return core;
+    return Core;
 
   })();
 
@@ -161,7 +160,7 @@
           var _j, _ref2, _results2;
           _results2 = [];
           for (columnIndex = _j = 0, _ref2 = game.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
-            _results2.push(game.playGround.setCellValue(new FloodIt.Point(rowIndex, columnIndex), Math.floor(Math.random() * game.colorsCount)));
+            _results2.push(game.playGround.setCellValue(new FloodIt.Cell(rowIndex, columnIndex), Math.floor(Math.random() * game.colorsCount)));
           }
           return _results2;
         })());
@@ -170,8 +169,10 @@
     };
 
     initPlayers = function(game) {
-      game.players[0].startPoint = new FloodIt.Point(0, 0);
-      return game.players[1].startPoint = new FloodIt.Point(game.rowCount - 1, game.columnCount - 1);
+      game.players[0].startCell = new FloodIt.Cell(0, 0);
+      game.players[1].startCell = new FloodIt.Cell(game.rowCount - 1, game.columnCount - 1);
+      game.players[0].currentValue = game.playGround.getCellValue(game.players[0].startCell);
+      return game.players[1].currentValue = game.playGround.getCellValue(game.players[1].startCell);
     };
 
     Map.init = function(game) {
@@ -191,7 +192,9 @@
     function Engine() {}
 
     Engine.step = function(game, selectedValue) {
-      FloodIt.core.flood(game.playGround, game.players[game.currentPlayerId].startPoint, selectedValue);
+      if (!FloodIt.Engine.isValidSelectedValue(game, selectedValue)) return;
+      FloodIt.Core.flood(game.playGround, game.players[game.currentPlayerId].startCell, selectedValue);
+      FloodIt.Engine.updatePlayersColor(game);
       return FloodIt.Engine.switchPlayer(game);
     };
 
@@ -201,6 +204,22 @@
       } else {
         return game.currentPlayerId = 0;
       }
+    };
+
+    Engine.updatePlayersColor = function(game) {
+      return game.players.forEach(function(player, i) {
+        return player.currentValue = game.playGround.getCellValue(player.startCell);
+      });
+    };
+
+    Engine.isValidSelectedValue = function(game, selectedValue) {
+      var player, _i, _len, _ref;
+      _ref = game.players;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        player = _ref[_i];
+        if (selectedValue === player.currentValue) return false;
+      }
+      return true;
     };
 
     return Engine;

@@ -1,18 +1,18 @@
-class FloodIt.core
-  floodFill = (playGround, currentPoint, targetValue, replacementValue) ->
-    return if not playGround.isPointInPlayGround(currentPoint);
-    return if playGround.getCellValue(currentPoint) != targetValue
-    playGround.setCellValue(currentPoint, replacementValue);
-    floodFill(playGround, currentPoint.left(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
+class FloodIt.Core
+  floodFill = (playGround, currentCell, targetValue, replacementValue) ->
+    return if not playGround.isCellInPlayGround(currentCell);
+    return if playGround.getCellValue(currentCell) != targetValue
+    playGround.setCellValue(currentCell, replacementValue);
+    floodFill(playGround, currentCell.left(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.right(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.up(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.down(), targetValue, replacementValue);
 
-  @flood: (playGround, startPoint, replacementValue) ->
-    return if playGround.getCellValue(startPoint) == replacementValue;
+  @flood: (playGround, startCell, replacementValue) ->
+    return if playGround.getCellValue(startCell) == replacementValue;
     floodFill(playGround,
-      startPoint,
-      playGround.getCellValue(startPoint),
+      startCell,
+      playGround.getCellValue(startCell),
       replacementValue
     );
     playGround;

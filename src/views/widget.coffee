@@ -1,47 +1,61 @@
 class FloodIt.Widget
   constructor: (@canvas, @game) ->
     @context = canvas.getContext('2d');
-    @colorsArray = ["#e61961", "#4219e6", "#19e6b9", "#4ce619", "#fffb00"];
+    @context.fillStyle = '#000';
+    @context.fillRect(
+      0, 
+      0, 
+      canvas.width,
+      canvas.height
+    );
+    @borderWidth = 10;
+   
+    @playGroundRect = 
+      top: @borderWidth
+      left: @borderWidth
+      width: @canvas.width - @borderWidth * 2
+      height: @canvas.height - @borderWidth * 2
+      
+    @playGroundWidget = new FloodIt.PlayGroundWidget(
+      @context,
+      @game.playGround,
+      @playGroundRect
+    );
+    
     @engine = FloodIt.Engine;
     widget = this;
     @canvas.addEventListener(
       "click", 
       (e) ->  widget.click(e),
       false);
-    @refreshPlayGround();
+    @refresh();
+      
+  refresh: () ->
+    for player in @game.players
+      playerRect = @playGroundWidget.getCellRect(
+        player.startCell.rowIndex,
+        player.startCell.columnIndex,
+      );
+      if (player == @game.players[@game.currentPlayerId])
+        @context.fillStyle = @playGroundWidget.colorsArray[player.currentValue];
+      else 
+        @context.fillStyle = '#000';
+      @context.fillRect(
+        playerRect.left - @borderWidth + 1,
+        playerRect.top - @borderWidth + 1,
+        playerRect.width + 3 * @borderWidth - 2,
+        playerRect.height + 3 * @borderWidth - 2,
+      );
     
-  refreshPlayGround: () ->
-    playGround = @game.playGround;
-    @context.fillStyle = '#00f';
-    cnt = 0;
-    for rowIndex in [0..playGround.rowCount - 1]
-      for columnIndex in [0..playGround.columnCount - 1]
-        groundValue = playGround.getCellValue(new FloodIt.Point(rowIndex, columnIndex));
-        @context.fillStyle = '#f00';
-        @context.fillStyle = @colorsArray[groundValue] if @colorsArray[groundValue] != undefined;
-
-        @context.fillRect(
-          @canvas.width / playGround.columnCount * columnIndex, 
-          @canvas.height / playGround.rowCount * rowIndex, 
-          @canvas.width / playGround.columnCount * (columnIndex + 1), 
-          @canvas.height / playGround.rowCount * (rowIndex + 1)
-        );
-
+    
+    @playGroundWidget.refresh();
+    
+    
   click: (e) ->
     cursorPosition = @getCursorPosition(e);
-    cellWidth = @canvas.width / @game.playGround.columnCount;
-    cellHeight = @canvas.height / @game.playGround.rowCount;
-    selectedCell = new FloodIt.Point(
-      Math.floor(cursorPosition.y / cellHeight),
-      Math.floor(cursorPosition.x / cellWidth)
-    );
-    
+    selectedCell = @playGroundWidget.getCellByCursorPosition(cursorPosition);
     @engine.step(@game, @game.playGround.getCellValue(selectedCell));
-    @refreshPlayGround();
-    
-  getValueByColor: (color) ->
-    for colorIndex in [0..@colorsArray.length - 1]
-      return colorIndex if @colorsArray[colorIndex] == color;
+    @refresh();
     
   getCursorPosition: (e) ->
     cursorPosition = 

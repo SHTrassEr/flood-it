@@ -1,12 +1,12 @@
 root = exports ? this
 root.FloodIt = {} if root.FloodIt == undefined;
 FloodIt = root.FloodIt
-class FloodIt.Point
+class FloodIt.Cell
   constructor: (@rowIndex, @columnIndex) ->
-  left: -> new FloodIt.Point(@rowIndex, @columnIndex - 1)
-  right: -> new FloodIt.Point(@rowIndex, @columnIndex + 1)
-  up: -> new FloodIt.Point(@rowIndex - 1, @columnIndex)
-  down: -> new FloodIt.Point(@rowIndex + 1, @columnIndex)
+  left: -> new FloodIt.Cell(@rowIndex, @columnIndex - 1)
+  right: -> new FloodIt.Cell(@rowIndex, @columnIndex + 1)
+  up: -> new FloodIt.Cell(@rowIndex - 1, @columnIndex)
+  down: -> new FloodIt.Cell(@rowIndex + 1, @columnIndex)
 class FloodIt.PlayGround
   constructor: (@rowCount, @columnCount) ->
     @playGround = []
@@ -15,29 +15,29 @@ class FloodIt.PlayGround
       for columnIndex in [0..@columnCount - 1]
         @playGround[rowIndex].push(0);
 
-  isPointInPlayGround: (pointToCell) ->
-    if(not pointToCell instanceof FloodIt.Point)
-      throw new Error("ArgumentException: pointToCell is not instance of FloodIt.Point");
-    if pointToCell.columnIndex < 0 or pointToCell.columnIndex >= @columnCount
+  isCellInPlayGround: (cell) ->
+    if(not cell instanceof FloodIt.Cell)
+      throw new Error("ArgumentException: cell is not instance of FloodIt.Cell");
+    if cell.columnIndex < 0 or cell.columnIndex >= @columnCount
       return false;
-    if pointToCell.rowIndex < 0 or pointToCell.rowIndex >= @rowCount
+    if cell.rowIndex < 0 or cell.rowIndex >= @rowCount
       return false;
     return true
 
-  getCellValue: (pointToCell) ->
-    if (@isPointInPlayGround(pointToCell) == true)
-      @playGround[pointToCell.rowIndex][pointToCell.columnIndex];
+  getCellValue: (cell) ->
+    if (@isCellInPlayGround(cell) == true)
+      @playGround[cell.rowIndex][cell.columnIndex];
     else
-      throw new Error("ArgumentException: pointToCell");
+      throw new Error("ArgumentException: cell");
       
-   setCellValue: (pointToCell, value) ->
-    if (@isPointInPlayGround(pointToCell) == true)
-      @playGround[pointToCell.rowIndex][pointToCell.columnIndex] = value;
+   setCellValue: (cell, value) ->
+    if (@isCellInPlayGround(cell) == true)
+      @playGround[cell.rowIndex][cell.columnIndex] = value;
       value
     else
-      throw new Error("ArgumentException: pointToCell")
+      throw new Error("ArgumentException: cell")
 class FloodIt.Player
-  constructor: (@name, @startPoint) ->
+  constructor: (@name, @startCell, @currentValue) ->
 class FloodIt.Game
   constructor: () ->
     @rowCount = 10;
@@ -50,21 +50,21 @@ class FloodIt.Game
       new FloodIt.Player("Player2")
     ];
     @currentPlayerId = 0;
-class FloodIt.core
-  floodFill = (playGround, currentPoint, targetValue, replacementValue) ->
-    return if not playGround.isPointInPlayGround(currentPoint);
-    return if playGround.getCellValue(currentPoint) != targetValue
-    playGround.setCellValue(currentPoint, replacementValue);
-    floodFill(playGround, currentPoint.left(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.right(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.up(), targetValue, replacementValue);
-    floodFill(playGround, currentPoint.down(), targetValue, replacementValue);
+class FloodIt.Core
+  floodFill = (playGround, currentCell, targetValue, replacementValue) ->
+    return if not playGround.isCellInPlayGround(currentCell);
+    return if playGround.getCellValue(currentCell) != targetValue
+    playGround.setCellValue(currentCell, replacementValue);
+    floodFill(playGround, currentCell.left(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.right(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.up(), targetValue, replacementValue);
+    floodFill(playGround, currentCell.down(), targetValue, replacementValue);
 
-  @flood: (playGround, startPoint, replacementValue) ->
-    return if playGround.getCellValue(startPoint) == replacementValue;
+  @flood: (playGround, startCell, replacementValue) ->
+    return if playGround.getCellValue(startCell) == replacementValue;
     floodFill(playGround,
-      startPoint,
-      playGround.getCellValue(startPoint),
+      startCell,
+      playGround.getCellValue(startCell),
       replacementValue
     );
     playGround;
@@ -74,14 +74,19 @@ class FloodIt.Map
     for rowIndex in [0..game.rowCount - 1]
       for columnIndex in [0..game.columnCount - 1]
         game.playGround.setCellValue(
-          new FloodIt.Point(rowIndex, columnIndex),
+          new FloodIt.Cell(rowIndex, columnIndex),
           Math.floor(Math.random() * game.colorsCount)
         );
 
   initPlayers = (game) ->
-    game.players[0].startPoint = new FloodIt.Point(0, 0);
-    game.players[1].startPoint = 
-      new FloodIt.Point(game.rowCount - 1, game.columnCount - 1);
+    game.players[0].startCell = new FloodIt.Cell(0, 0);
+    game.players[1].startCell = 
+      new FloodIt.Cell(game.rowCount - 1, game.columnCount - 1);
+
+    game.players[0].currentValue = 
+      game.playGround.getCellValue(game.players[0].startCell);
+    game.players[1].currentValue = 
+      game.playGround.getCellValue(game.players[1].startCell);
 
   @init: (game) ->
     game.playGround = 
@@ -90,11 +95,13 @@ class FloodIt.Map
     initPlayers(game);
 class FloodIt.Engine
   @step: (game, selectedValue) ->
-    FloodIt.core.flood(
+    return if not FloodIt.Engine.isValidSelectedValue(game, selectedValue);
+    FloodIt.Core.flood(
       game.playGround,
-      game.players[game.currentPlayerId].startPoint,
+      game.players[game.currentPlayerId].startCell,
       selectedValue
     );
+    FloodIt.Engine.updatePlayersColor(game);
     FloodIt.Engine.switchPlayer(game);
 
   @switchPlayer: (game) ->
@@ -102,3 +109,14 @@ class FloodIt.Engine
       game.currentPlayerId++
     else
       game.currentPlayerId = 0;
+      
+  @updatePlayersColor: (game) ->
+    game.players.forEach((player, i) ->
+      player.currentValue = 
+        game.playGround.getCellValue(player.startCell);
+    );
+
+  @isValidSelectedValue: (game, selectedValue) ->
+    for player in game.players
+      return false if selectedValue == player.currentValue
+    true;

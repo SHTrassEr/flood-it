@@ -17,54 +17,46 @@
       this.canvas = canvas;
       this.game = game;
       this.context = canvas.getContext('2d');
-      this.colorsArray = ["#e61961", "#4219e6", "#19e6b9", "#4ce619", "#fffb00"];
+      this.context.fillStyle = '#000';
+      this.context.fillRect(0, 0, canvas.width, canvas.height);
+      this.borderWidth = 10;
+      this.playGroundRect = {
+        top: this.borderWidth,
+        left: this.borderWidth,
+        width: this.canvas.width - this.borderWidth * 2,
+        height: this.canvas.height - this.borderWidth * 2
+      };
+      this.playGroundWidget = new FloodIt.PlayGroundWidget(this.context, this.game.playGround, this.playGroundRect);
       this.engine = FloodIt.Engine;
       widget = this;
       this.canvas.addEventListener("click", function(e) {
         return widget.click(e);
       }, false);
-      this.refreshPlayGround();
+      this.refresh();
     }
 
-    Widget.prototype.refreshPlayGround = function() {
-      var cnt, columnIndex, groundValue, playGround, rowIndex, _i, _ref, _results;
-      playGround = this.game.playGround;
-      this.context.fillStyle = '#00f';
-      cnt = 0;
-      _results = [];
-      for (rowIndex = _i = 0, _ref = playGround.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
-        _results.push((function() {
-          var _j, _ref2, _results2;
-          _results2 = [];
-          for (columnIndex = _j = 0, _ref2 = playGround.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
-            groundValue = playGround.getCellValue(new FloodIt.Point(rowIndex, columnIndex));
-            this.context.fillStyle = '#f00';
-            if (this.colorsArray[groundValue] !== void 0) {
-              this.context.fillStyle = this.colorsArray[groundValue];
-            }
-            _results2.push(this.context.fillRect(this.canvas.width / playGround.columnCount * columnIndex, this.canvas.height / playGround.rowCount * rowIndex, this.canvas.width / playGround.columnCount * (columnIndex + 1), this.canvas.height / playGround.rowCount * (rowIndex + 1)));
-          }
-          return _results2;
-        }).call(this));
+    Widget.prototype.refresh = function() {
+      var player, playerRect, _i, _len, _ref;
+      _ref = this.game.players;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        player = _ref[_i];
+        playerRect = this.playGroundWidget.getCellRect(player.startCell.rowIndex, player.startCell.columnIndex);
+        if (player === this.game.players[this.game.currentPlayerId]) {
+          this.context.fillStyle = this.playGroundWidget.colorsArray[player.currentValue];
+        } else {
+          this.context.fillStyle = '#000';
+        }
+        this.context.fillRect(playerRect.left - this.borderWidth + 1, playerRect.top - this.borderWidth + 1, playerRect.width + 3 * this.borderWidth - 2, playerRect.height + 3 * this.borderWidth - 2);
       }
-      return _results;
+      return this.playGroundWidget.refresh();
     };
 
     Widget.prototype.click = function(e) {
-      var cellHeight, cellWidth, cursorPosition, selectedCell;
+      var cursorPosition, selectedCell;
       cursorPosition = this.getCursorPosition(e);
-      cellWidth = this.canvas.width / this.game.playGround.columnCount;
-      cellHeight = this.canvas.height / this.game.playGround.rowCount;
-      selectedCell = new FloodIt.Point(Math.floor(cursorPosition.y / cellHeight), Math.floor(cursorPosition.x / cellWidth));
+      selectedCell = this.playGroundWidget.getCellByCursorPosition(cursorPosition);
       this.engine.step(this.game, this.game.playGround.getCellValue(selectedCell));
-      return this.refreshPlayGround();
-    };
-
-    Widget.prototype.getValueByColor = function(color) {
-      var colorIndex, _i, _ref;
-      for (colorIndex = _i = 0, _ref = this.colorsArray.length - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; colorIndex = 0 <= _ref ? ++_i : --_i) {
-        if (this.colorsArray[colorIndex] === color) return colorIndex;
-      }
+      return this.refresh();
     };
 
     Widget.prototype.getCursorPosition = function(e) {
@@ -86,6 +78,75 @@
     };
 
     return Widget;
+
+  })();
+
+  FloodIt.PlayGroundWidget = (function() {
+
+    PlayGroundWidget.name = 'PlayGroundWidget';
+
+    function PlayGroundWidget(context, playGround, rect) {
+      this.context = context;
+      this.playGround = playGround;
+      this.rect = rect;
+      this.colorsArray = ["#5151f5", "#54fc54", "#57ffff", "#fa5252", "#f550f5", "#fcf951", "#fcfcfc"];
+    }
+
+    PlayGroundWidget.prototype.refresh = function() {
+      var cnt, columnIndex, groundValue, rowIndex, _i, _ref, _results;
+      this.context.fillStyle = '#00f';
+      cnt = 0;
+      _results = [];
+      for (rowIndex = _i = 0, _ref = this.playGround.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
+        _results.push((function() {
+          var _j, _ref2, _results2;
+          _results2 = [];
+          for (columnIndex = _j = 0, _ref2 = this.playGround.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
+            groundValue = this.playGround.getCellValue(new FloodIt.Cell(rowIndex, columnIndex));
+            _results2.push(this.drawCell(this.context, this.getCellRect(rowIndex, columnIndex), groundValue));
+          }
+          return _results2;
+        }).call(this));
+      }
+      return _results;
+    };
+
+    PlayGroundWidget.prototype.getCellRect = function(rowIndex, columnIndex) {
+      var cellRect;
+      return cellRect = {
+        left: Math.floor(this.rect.width / this.playGround.columnCount * columnIndex + this.rect.left),
+        top: Math.floor(this.rect.height / this.playGround.rowCount * rowIndex + this.rect.top),
+        width: Math.ceil(this.rect.width / this.playGround.columnCount),
+        height: Math.ceil(this.rect.height / this.playGround.rowCount)
+      };
+    };
+
+    PlayGroundWidget.prototype.getCellByCursorPosition = function(cursorPosition) {
+      var cellHeight, cellWidth, selectedCell;
+      cellWidth = this.rect.width / this.playGround.columnCount;
+      cellHeight = this.rect.height / this.playGround.rowCount;
+      selectedCell = new FloodIt.Cell(Math.floor((cursorPosition.y - this.rect.top) / cellHeight), Math.floor((cursorPosition.x - this.rect.left) / cellWidth));
+      return selectedCell;
+    };
+
+    PlayGroundWidget.prototype.drawCell = function(context, cellRect, groundValue) {
+      var cellCenter;
+      this.context = context;
+      cellCenter = {
+        x: cellRect.left + cellRect.width / 2,
+        y: cellRect.top + cellRect.height / 2
+      };
+      this.context.fillStyle = '#f00';
+      if (this.colorsArray[groundValue] !== void 0) {
+        this.context.fillStyle = this.colorsArray[groundValue];
+      }
+      this.context.fillRect(cellRect.left, cellRect.top, cellRect.width, cellRect.height);
+      this.context.fillStyle = "rgba(0,0,0,0.2)";
+      this.context.fillRect(cellCenter.x - cellRect.width / 6, cellCenter.y - cellRect.height / 6, cellRect.width / 3, cellRect.height / 3);
+      return this.context.fillRect(cellCenter.x - cellRect.width / 12, cellCenter.y - cellRect.height / 12, cellRect.width / 6, cellRect.height / 6);
+    };
+
+    return PlayGroundWidget;
 
   })();
 

@@ -1,2 +1,2 @@
 class FloodIt.Player
-  constructor: (@name, @startPoint) ->
+  constructor: (@name, @startCell, @currentValue) ->

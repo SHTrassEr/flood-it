@@ -10,7 +10,7 @@ end
 
 task :compile do
   `cat src/global.coffee > tmp/floodit.coffee`
-  `cat src/models/point.coffee >> tmp/floodit.coffee`
+  `cat src/models/cell.coffee >> tmp/floodit.coffee`
   `cat src/models/playground.coffee >> tmp/floodit.coffee`
   `cat src/models/player.coffee>> tmp/floodit.coffee`
   `cat src/models/game.coffee>> tmp/floodit.coffee`
@@ -23,5 +23,6 @@ task :compile do
   
   `cat src/global.coffee > tmp/widget.coffee`
   `cat src/views/widget.coffee >> tmp/widget.coffee`
+  `cat src/views/playgroundwidget.coffee >> tmp/widget.coffee`
   `coffee -c -j "public/javascripts/widget.js" "tmp/widget.coffee"`
 end

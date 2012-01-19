@@ -32,7 +32,7 @@ function fillPlayGround(playGround, fillMethod) {
   for (row = 0; row < playGround.rowCount; row++) {
     for (column = 0; column < playGround.columnCount; column++) {
       playGround.setCellValue(
-        new FloodIt.Point(row, column),
+        new FloodIt.Cell(row, column),
         fillMethod(row, column)
       );
     }

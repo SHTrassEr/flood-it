@@ -4,7 +4,7 @@ describe("Core", function() {
       playGround = new FloodIt.PlayGround(5, 8);
       var filledPlayGround = new FloodIt.PlayGround(5, 8);
       fillPlayGroundByValue(filledPlayGround, 1);
-      FloodIt.core.flood(playGround, new FloodIt.Point(0,0), 1);
+      FloodIt.Core.flood(playGround, new FloodIt.Cell(0,0), 1);
       expect(playGround).toEqual(filledPlayGround);
     })
 
@@ -13,7 +13,7 @@ describe("Core", function() {
       fillPlayGroundByOrder(playGround);
       var filledPlayGround = new FloodIt.PlayGround(3, 9);
       fillPlayGroundByOrder(filledPlayGround);
-      FloodIt.core.flood(playGround, new FloodIt.Point(0,0), 1);
+      FloodIt.Core.flood(playGround, new FloodIt.Cell(0,0), 1);
       expect(playGround).toEqual(filledPlayGround);
     })
     
@@ -23,7 +23,7 @@ describe("Core", function() {
       var filledPlayGround = new FloodIt.PlayGround(3, 9);
       fillPlayGroundByValue(filledPlayGround, 27);
       for (i = 2; i < 28; i++) {
-        FloodIt.core.flood(playGround, new FloodIt.Point(0,0), i);
+        FloodIt.Core.flood(playGround, new FloodIt.Cell(0,0), i);
       }
       expect(playGround).toEqual(filledPlayGround);
     })
