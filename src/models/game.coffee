@@ -1,9 +1,7 @@
 class FloodIt.Game
-  constructor: () ->
-    @rowCount = 10;
-    @columnCount = 20;
+  constructor: (rowCount, columnCount) ->
     @colorsCount = 4;
-    @playGround = null;
+    @playGround = new FloodIt.PlayGround(rowCount, columnCount);
     @playersCount = 2;
     @players = [
       new FloodIt.Player("Player1"),

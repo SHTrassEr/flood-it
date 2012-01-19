@@ -104,11 +104,9 @@
 
     Game.name = 'Game';
 
-    function Game() {
-      this.rowCount = 10;
-      this.columnCount = 20;
+    function Game(rowCount, columnCount) {
       this.colorsCount = 4;
-      this.playGround = null;
+      this.playGround = new FloodIt.PlayGround(rowCount, columnCount);
       this.playersCount = 2;
       this.players = [new FloodIt.Player("Player1"), new FloodIt.Player("Player2")];
       this.currentPlayerId = 0;
@@ -155,11 +153,11 @@
     fillPlayGround = function(game) {
       var columnIndex, rowIndex, _i, _ref, _results;
       _results = [];
-      for (rowIndex = _i = 0, _ref = game.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
+      for (rowIndex = _i = 0, _ref = game.playGround.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
         _results.push((function() {
           var _j, _ref2, _results2;
           _results2 = [];
-          for (columnIndex = _j = 0, _ref2 = game.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
+          for (columnIndex = _j = 0, _ref2 = game.playGround.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
             _results2.push(game.playGround.setCellValue(new FloodIt.Cell(rowIndex, columnIndex), Math.floor(Math.random() * game.colorsCount)));
           }
           return _results2;
@@ -170,13 +168,12 @@
 
     initPlayers = function(game) {
       game.players[0].startCell = new FloodIt.Cell(0, 0);
-      game.players[1].startCell = new FloodIt.Cell(game.rowCount - 1, game.columnCount - 1);
+      game.players[1].startCell = new FloodIt.Cell(game.playGround.rowCount - 1, game.playGround.columnCount - 1);
       game.players[0].currentValue = game.playGround.getCellValue(game.players[0].startCell);
       return game.players[1].currentValue = game.playGround.getCellValue(game.players[1].startCell);
     };
 
     Map.init = function(game) {
-      game.playGround = new FloodIt.PlayGround(game.rowCount, game.columnCount);
       fillPlayGround(game);
       return initPlayers(game);
     };

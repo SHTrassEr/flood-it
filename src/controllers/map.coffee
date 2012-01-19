@@ -1,8 +1,8 @@
 class FloodIt.Map
 
   fillPlayGround = (game) ->
-    for rowIndex in [0..game.rowCount - 1]
-      for columnIndex in [0..game.columnCount - 1]
+    for rowIndex in [0..game.playGround.rowCount - 1]
+      for columnIndex in [0..game.playGround.columnCount - 1]
         game.playGround.setCellValue(
           new FloodIt.Cell(rowIndex, columnIndex),
           Math.floor(Math.random() * game.colorsCount)
@@ -11,7 +11,7 @@ class FloodIt.Map
   initPlayers = (game) ->
     game.players[0].startCell = new FloodIt.Cell(0, 0);
     game.players[1].startCell = 
-      new FloodIt.Cell(game.rowCount - 1, game.columnCount - 1);
+      new FloodIt.Cell(game.playGround.rowCount - 1, game.playGround.columnCount - 1);
 
     game.players[0].currentValue = 
       game.playGround.getCellValue(game.players[0].startCell);
@@ -19,7 +19,5 @@ class FloodIt.Map
       game.playGround.getCellValue(game.players[1].startCell);
 
   @init: (game) ->
-    game.playGround = 
-      new FloodIt.PlayGround(game.rowCount, game.columnCount);
     fillPlayGround(game);
     initPlayers(game);

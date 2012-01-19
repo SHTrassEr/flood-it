@@ -10,12 +10,13 @@
 
 <body>
 
-  <canvas height='620' width='1020' id='flooditCanvas'>Обновите браузер</canvas>
+  <canvas height='420' width='820' id='flooditCanvas'>Обновите браузер</canvas>
 
   <script>
-    var game = new FloodIt.Game();
-    game.rowCount = 30;
-    game.columnCount = 50;
+    var rowCount = 20;
+    var columnCount = 40;
+    var game = new FloodIt.Game(rowCount, columnCount);
+
     game.colorsCount = 7;
     FloodIt.Map.init(game);
 
