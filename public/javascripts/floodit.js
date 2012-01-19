@@ -188,20 +188,18 @@
 
     Engine.name = 'Engine';
 
-    function Engine(game) {
-      this.game = game;
-    }
+    function Engine() {}
 
-    Engine.prototype.step = function(selectedValue) {
-      FloodIt.core.flood(this.game.playGround, this.game.players[this.game.currentPlayerId].startPoint, selectedValue);
-      return this.switchPlayer();
+    Engine.step = function(game, selectedValue) {
+      FloodIt.core.flood(game.playGround, game.players[game.currentPlayerId].startPoint, selectedValue);
+      return FloodIt.Engine.switchPlayer(game);
     };
 
-    Engine.prototype.switchPlayer = function() {
-      if (this.game.currentPlayerId < this.game.playersCount - 1) {
-        return this.game.currentPlayerId++;
+    Engine.switchPlayer = function(game) {
+      if (game.currentPlayerId < game.playersCount - 1) {
+        return game.currentPlayerId++;
       } else {
-        return this.game.currentPlayerId = 0;
+        return game.currentPlayerId = 0;
       }
     };
 

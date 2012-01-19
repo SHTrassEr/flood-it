@@ -21,7 +21,7 @@ task :compile do
 
   `coffee -c -j "public/javascripts/floodit.js" "tmp/floodit.coffee"`
   
-  `cat src/global.coffee > tmp/floodit_view.coffee`
-  `cat src/views/playgroundview.coffee >> tmp/floodit_view.coffee`
-  `coffee -c -j "public/javascripts/floodit_view.js" "tmp/floodit_view.coffee"`
+  `cat src/global.coffee > tmp/widget.coffee`
+  `cat src/views/widget.coffee >> tmp/widget.coffee`
+  `coffee -c -j "public/javascripts/widget.js" "tmp/widget.coffee"`
 end

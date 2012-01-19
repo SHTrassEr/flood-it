@@ -4,7 +4,7 @@
 
   <title>canvasExample</title>
   <script type="text/javascript" src="javascripts/floodit.js"></script>
-  <script type="text/javascript" src="javascripts/floodit_view.js"></script>
+  <script type="text/javascript" src="javascripts/widget.js"></script>
   
 </head>
 
@@ -13,39 +13,18 @@
   <canvas height='600' width='1000' id='flooditCanvas'>Обновите браузер</canvas>
 
   <script>
-  function step(value) {
-    engine.step(value);
-    view.refresh();
-  }
-
-  function canvasClick() {
-    alert("ssss");
-  }
-
     var game = new FloodIt.Game();
-    game.rowCount = 15;
-    game.columnCount = 25;
+    game.rowCount = 30;
+    game.columnCount = 50;
     game.colorsCount = 5;
     FloodIt.Map.init(game);
-
-    engine = new FloodIt.Engine(game);
 
     var playGround = game.playGround;
 
     var canvas = document.getElementById('flooditCanvas');
-    canvas.addEventListener("click", canvasClick, false);
-    FloodIt.Game.view = new FloodIt.View(canvas, engine);
-
-    view = FloodIt.Game.view;
-
-    view.refresh();
-//    setTimeout("step(0)",1000);
+    widget = new FloodIt.Widget(canvas, game);
 
   </script>
-<a href="#" onclick="step(0);">0</a>
-<a href="#" onclick="step(1);">1</a>
-<a href="#" onclick="step(2);">2</a>
-<a href="#" onclick="step(3);">3</a>
 </body>
 
 </html>

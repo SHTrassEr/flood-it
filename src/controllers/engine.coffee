@@ -1,16 +1,14 @@
 class FloodIt.Engine
-  constructor: (@game) ->
-
-  step: (selectedValue) ->
+  @step: (game, selectedValue) ->
     FloodIt.core.flood(
-      @game.playGround,
-      @game.players[@game.currentPlayerId].startPoint,
+      game.playGround,
+      game.players[game.currentPlayerId].startPoint,
       selectedValue
     );
-    @switchPlayer();
+    FloodIt.Engine.switchPlayer(game);
 
-  switchPlayer: () ->
-    if (@game.currentPlayerId < @game.playersCount - 1)
-      @game.currentPlayerId++
+  @switchPlayer: (game) ->
+    if (game.currentPlayerId < game.playersCount - 1)
+      game.currentPlayerId++
     else
-      @game.currentPlayerId = 0;
+      game.currentPlayerId = 0;
