@@ -27,3 +27,11 @@ class FloodIt.PlayGround
       value
     else
       throw new Error("ArgumentException: cell")
+      
+  loadPlayGroundFromArray: (valuesArray) ->
+    if (valuesArray.length != @rowCount * @columnCount)
+      throw new Error("ArgumentException: valuesArray")
+    for rowIndex in [0..@rowCount - 1]
+      for columnIndex in [0..@columnCount - 1]
+        @playGround[rowIndex][columnIndex] = 
+          valuesArray[rowIndex * @columnCount + columnIndex];

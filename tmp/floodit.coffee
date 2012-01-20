@@ -36,6 +36,14 @@ class FloodIt.PlayGround
       value
     else
       throw new Error("ArgumentException: cell")
+      
+  loadPlayGroundFromArray: (valuesArray) ->
+    if (valuesArray.length != @rowCount * @columnCount)
+      throw new Error("ArgumentException: valuesArray")
+    for rowIndex in [0..@rowCount - 1]
+      for columnIndex in [0..@columnCount - 1]
+        @playGround[rowIndex][columnIndex] = 
+          valuesArray[rowIndex * @columnCount + columnIndex];
 class FloodIt.Player
   constructor: (@name, @startCell, @currentValue) ->
 class FloodIt.Game
@@ -88,6 +96,10 @@ class FloodIt.Map
 
   @init: (game) ->
     fillPlayGround(game);
+    initPlayers(game);
+    
+  @initFromArray: (game, valuesArray) ->
+    game.playGround.loadPlayGroundFromArray(valuesArray);
     initPlayers(game);
 class FloodIt.Engine
   @step: (game, selectedValue) ->

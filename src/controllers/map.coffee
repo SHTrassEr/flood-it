@@ -21,3 +21,7 @@ class FloodIt.Map
   @init: (game) ->
     fillPlayGround(game);
     initPlayers(game);
+    
+  @initFromArray: (game, valuesArray) ->
+    game.playGround.loadPlayGroundFromArray(valuesArray);
+    initPlayers(game);

@@ -82,6 +82,25 @@
       }
     };
 
+    PlayGround.prototype.loadPlayGroundFromArray = function(valuesArray) {
+      var columnIndex, rowIndex, _i, _ref, _results;
+      if (valuesArray.length !== this.rowCount * this.columnCount) {
+        throw new Error("ArgumentException: valuesArray");
+      }
+      _results = [];
+      for (rowIndex = _i = 0, _ref = this.rowCount - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; rowIndex = 0 <= _ref ? ++_i : --_i) {
+        _results.push((function() {
+          var _j, _ref2, _results2;
+          _results2 = [];
+          for (columnIndex = _j = 0, _ref2 = this.columnCount - 1; 0 <= _ref2 ? _j <= _ref2 : _j >= _ref2; columnIndex = 0 <= _ref2 ? ++_j : --_j) {
+            _results2.push(this.playGround[rowIndex][columnIndex] = valuesArray[rowIndex * this.columnCount + columnIndex]);
+          }
+          return _results2;
+        }).call(this));
+      }
+      return _results;
+    };
+
     return PlayGround;
 
   })();
@@ -175,6 +194,11 @@
 
     Map.init = function(game) {
       fillPlayGround(game);
+      return initPlayers(game);
+    };
+
+    Map.initFromArray = function(game, valuesArray) {
+      game.playGround.loadPlayGroundFromArray(valuesArray);
       return initPlayers(game);
     };
 
